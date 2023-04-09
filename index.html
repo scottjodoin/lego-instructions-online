@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Lego Instructions</title>
+	<style>
+    * {
+      box-sizing:border-box;
+      font-family: Verdana;
+    }
+    body {
+      margin-top: 1rem;
+      max-width: 750px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-right: 1vw;
+      padding-left: 1vw;
+    }
+		.page {
+			position: relative;
+			padding-bottom: 75%; /* 4:3 Aspect Ratio */
+			height: 0;
+			overflow: hidden;
+      margin-bottom:1rem;
+		}
+    .square-text{
+      position:absolute;
+      padding-left:10%;
+      top:40%;
+      width:100%;
+      font-size:2rem;
+      text-align: center;
+      pointer-events: none;
+    }
+		.square {
+			position: absolute;
+			top: 10%;
+			left: 10%;
+			width: 90%;
+			height: 90%;
+			background-color: transparent;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+      border: 4px solid grey;
+		}
+
+		.inset {
+      position: absolute;
+      top: 0;
+      left: 0;
+			width: 30%; /* 4:3 Aspect Ratio */
+			height: 30%;
+			background-color: transparent;
+      border: 4px solid black;
+		}
+    .page-num {
+      position: absolute;
+      top: 0;
+      left:0;
+      width: 100%;
+      text-align: right;
+      font-size: 300%;
+      font-family: Verdana;
+      color:black;
+    }
+    .button-container  {
+      display: flex;
+      justify-content:space-evenly;
+      margin-bottom:1rem;
+    }
+    .button-container > * {
+      width:100%;
+      /* box-sizing: content-box; */
+      margin-left: 1rem;
+    }
+    .button-container > *:first-child {
+      margin-left: 0;
+    }
+    button.capture-button {
+      background-color: lightgrey;;
+      border-radius: 4px;
+      border: 1px solid darkgrey;
+      font-size:2rem;
+      padding:0.5rem;
+      font-family:Verdana;
+      cursor:pointer;
+    }
+    button.capture-button:active {border-color:black;}
+    button.capture-button:hover {
+      background-color:white;
+    }
+
+    @media print {
+    body {
+      margin-top:0;
+      max-width: 1024px;
+    }
+    .page {
+      page-break-inside: avoid;
+    }
+    .button-container {
+      display:none;
+    }
+    #workbench .inset, #workbench .page-num{
+      display:none;
+    }
+    #workbench .square {
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+} 
+	</style>
+</head>
+<body>
+	<div id="workbench" class="page">
+    <div class="square-text">1. Click or tap to start camera.<br/>2. Tap again to capture.</div>
+		<canvas onclick="setCanvas(event)" id="canvas" class="copyable square"></canvas>
+    <canvas onclick="setCanvas(event)" class="copyable inset"></canvas>
+    <div class="copyable page-num">1</div>
+  </div>
+  <div class="button-container">
+    <button onclick="options(true)" class="capture-button">Options</button>
+    <button onclick="saveStep(event)" class="capture-button">Save Step</button>
+    <button onclick="finishInstructions(event)" class="capture-button">Finish</button>
+  </div>
+  <div id="steps"></div>
+  <script>
+  let video;  
+  let canvas = document.querySelector('canvas');
+  let ctx = canvas.getContext('2d');
+  let zoom = 1;
+  let locked = false;
+
+  if (navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: true })
+    .then(function (stream) {
+      video = document.createElement('video');
+      video.srcObject = stream;
+      video.onloadedmetadata = function(e) {
+        video.play();
+        drawVideo();
+      };
+    })
+    .catch(function (err) {
+      console.log("An error occurred: " + err);
+    });
+  }
+
+  function setCanvas(e){
+    if (canvas && canvas.id == e.target.id){
+      canvas = null;
+      ctx = null;
+    } else {
+      canvas = e.target;
+      ctx = canvas.getContext('2d');
+    }
+  }
+
+
+  function drawVideo() {
+    if (ctx && !locked) {
+      ctx.drawImage(video,
+        0, 0, canvas.width, canvas.height,
+        //0,0,video.width * zoom, video.height * zoom
+      );
+      // todo: crop the camera video to 4:3
+    }
+    requestAnimationFrame(drawVideo);
+  }
+
+  function saveStep() {
+    let stepElement = document.createElement("DIV")
+    stepElement.className = "page";
+    document.getElementById("steps").prepend(stepElement);
+    
+    let workbench = document.getElementById("workbench");
+    document.querySelectorAll("#workbench *").forEach((e,i) =>{
+      if (!e.classList.contains("copyable")) return;
+      workbench.removeChild(e);
+      stepElement.append(e);
+    });
+    
+    var html = `
+        <canvas onclick="setCanvas(event)" id="canvas" class="square"></canvas>
+        <canvas onclick="setCanvas(event)" class="inset"></canvas>
+        <div class="page-num">2</div>`;
+    
+    workbench.innerHTML = html;
+
+    setNumbers();
+  }
+
+  function setNumbers(){
+    let i = 1;
+    Array.from(document.querySelectorAll(".page-num"))
+      .reverse().forEach((e)=>{
+        e.innerText = i;
+        i++;
+      });
+  }
+
+  function finishInstructions(){
+    document.title = "Lego Instructions";
+    window.print();
+  }
+</script>
+</body>
+</html>
