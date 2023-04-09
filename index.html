@@ -139,32 +139,43 @@
       background-color:white;
     }
 
-    @media print {
-    body {
-      margin-top:0;
-      max-width: 100%;
+    .first-page {
+      display: none;
     }
-    .page {
-      break-after:always;
-      page-break-inside: avoid;
-      page-break-after: always;
-    }
-    .button-container {
-      display:none;
-    }
-    #workbench .inset, #workbench .page-num, .next-camera,.recording::after{
-      display:none;
-    }
-    #workbench .square {
+
+    .first-page .square {
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
     }
-} 
+
+    @media print {
+      .first-page {
+        display: block;
+      }
+      body {
+        margin-top:0;
+        max-width: 100%;
+      }
+      .page {
+        break-after:always;
+        page-break-inside: avoid;
+        page-break-after: always;
+      }
+      .button-container {
+        display:none;
+      }
+      #workbench, #workbench .inset, #workbench .page-num, .next-camera,.recording::after{
+        display:none;
+      }
+  } 
 	</style>
 </head>
 <body>
+  <div class="page first-page">
+    <div class="first-square square"></div>
+  </div>
 	<div id="workbench" class="page">
     <div class="square-text">1. Click or tap to start camera.<br/>2. Tap again to capture.</div>
 		<div class="copyable square" ><canvas onclick="setCanvas(event)" id="canvas" width="800" height="600"></canvas></div>
@@ -319,6 +330,7 @@
     workbench.innerHTML = html;
 
     setNumbers();
+    setFirstPage();
   }
 
   function setNumbers(){
@@ -327,6 +339,27 @@
         e.innerText = i;
         i++;
       });
+  }
+
+  function setFirstPage(){
+    const firstPage = document.querySelector(".first-square");
+    const squares = document.querySelectorAll(".square canvas");
+    if (squares.length == 0) return;
+
+    const lastSquare = squares[squares.length -1];
+
+    // get the first canvas element and its context
+    var ctx1 = lastSquare.getContext("2d");
+
+    // get the second canvas element and its context
+    var titleSquare = lastSquare.cloneNode(true);
+    delete titleSquare.onclick;
+    firstPage.innerHTML = "";
+    firstPage.appendChild(titleSquare);
+    var ctx2 = titleSquare.getContext("2d");
+
+    // draw the image from the first canvas to the second canvas
+    ctx2.drawImage(lastSquare, 0, 0);
   }
 
   function finishInstructions(){
