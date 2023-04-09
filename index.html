@@ -128,28 +128,35 @@
   </div>
   <div id="steps"></div>
   <script>
-  let video;  
+  let video = null;  
   let canvas = document.querySelector('canvas');
   let ctx = canvas.getContext('2d');
   let zoom = 1;
   let locked = false;
 
-  if (navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({ video: true })
-    .then(function (stream) {
-      video = document.createElement('video');
-      video.srcObject = stream;
-      video.onloadedmetadata = function(e) {
-        video.play();
-        drawVideo();
-      };
-    })
-    .catch(function (err) {
-      console.log("An error occurred: " + err);
-    });
+  
+  function getWebCam(){
+    if (navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+      .then(function (stream) {
+        video = document.createElement('video');
+        video.srcObject = stream;
+        video.onloadedmetadata = function(e) {
+          video.play();
+          drawVideo();
+        };
+      })
+      .catch(function (err) {
+        console.log("An error occurred: " + err);
+      });
+    }
   }
 
   function setCanvas(e){
+    if (!video){
+
+    }
+
     if (canvas && canvas.id == e.target.id){
       canvas = null;
       ctx = null;
