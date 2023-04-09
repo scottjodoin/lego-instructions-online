@@ -150,7 +150,7 @@
   let video = null;  
   let canvas = document.querySelector('canvas');
   let ctx = canvas.getContext('2d');
-  let zoom = 1;
+  let zoom = 1.3;
   let locked = false;
   let videoDevices = [];
   let selectedId = 0;
@@ -198,9 +198,9 @@
       canvas = e.target;
       ctx = canvas.getContext('2d');
       if (e.target.classList.contains("inset")){
-        zoom = 2;
+        zoom = 2.6;
       } else {
-        zoom = 1;
+        zoom = 1.3;
       }
     }
     
