@@ -140,6 +140,13 @@
   </div>
   <div id="steps"></div>
   <script>
+
+  // todo:
+  // make the camera letterbox the input to 4:3
+  // make the text more responive for mobile?
+  // add swipe for camera change
+  // zoom in for the inset box
+
   let video = null;  
   let canvas = document.querySelector('canvas');
   let ctx = canvas.getContext('2d');
@@ -197,14 +204,39 @@
 
   function drawVideo() {
     if (ctx && !locked) {
-      ctx.drawImage(video,
-        0, 0, canvas.width, canvas.height,
-        //0,0,video.width * zoom, video.height * zoom
-      );
-      // todo: crop the camera video to 4:3
+      drawLetterBoxed();
     }
     requestAnimationFrame(drawVideo);
   }
+
+  function drawLetterBoxed(){
+    // Calculate the dimensions of the image
+    const videoWidth = video.width;
+    const videoHeight = video.height;
+
+    // Calculate the aspect ratios of the canvas and the image
+    const canvasAspectRatio = canvas.width / canvas.height;
+    const videoAspectRatio = videoWidth / videoHeight;
+
+    // Calculate the scale factor to fit the image onto the canvas
+    let scaleFactor;
+    if (videoAspectRatio > canvasAspectRatio) {
+      scaleFactor = canvas.width / videoWidth;
+    } else {
+      scaleFactor = canvas.height / videoHeight;
+    }
+
+    // Calculate the dimensions of the scaled image
+    const scaledWidth = videoWidth * scaleFactor;
+    const scaledHeight = videoHeight * scaleFactor;
+
+    // Calculate the position of the image on the canvas
+    const x = (canvas.width - scaledWidth) / 2;
+    const y = (canvas.height - scaledHeight) / 2;
+
+    // Draw the scaled image on the canvas
+    ctx.drawImage(video, x, y, scaledWidth, scaledHeight);
+  };
 
   function saveStep() {
     let stepElement = document.createElement("DIV")
