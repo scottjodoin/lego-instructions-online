@@ -29,7 +29,7 @@
       padding-left:10%;
       top:40%;
       width:100%;
-      font-size:2rem;
+      font-size: clamp(1rem, 5vw, 2rem);
       text-align: center;
       pointer-events: none;
     }
@@ -60,8 +60,9 @@
       top: 0;
       left:0;
       width: 100%;
+      height:10%;
       text-align: right;
-      font-size: 300%;
+      font-size: clamp(1rem, 5vw, 3rem);
       font-family: Verdana;
       color:black;
     }
@@ -92,7 +93,7 @@
       background-color: lightgrey;;
       border-radius: 4px;
       border: 1px solid darkgrey;
-      font-size:2rem;
+      font-size: clamp(1rem, 5vw, 2rem);
       padding:0.5rem;
       font-family:Verdana;
       cursor:pointer;
@@ -251,9 +252,11 @@
     });
     
     var html = `
-        <canvas onclick="setCanvas(event)" id="canvas" class="square"></canvas>
-        <canvas onclick="setCanvas(event)" class="inset"></canvas>
-        <div class="page-num">2</div>`;
+    <div class="square-text">1. Click or tap to start camera.<br/>2. Tap again to capture.</div>
+		<canvas onclick="setCanvas(event)" id="canvas" class="copyable square" width="800" height="600"></canvas>
+    <canvas onclick="setCanvas(event)" class="copyable inset" width="400" height="300"></canvas>
+    <div class="copyable page-num">1</div>
+    <button class="next-camera" onclick="getNextWebCam(event)" >Start Camera</button>`;
     
     workbench.innerHTML = html;
 
