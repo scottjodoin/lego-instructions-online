@@ -17,6 +17,38 @@
       padding-right: 1vw;
       padding-left: 1vw;
     }
+
+    .recording::after {
+      display:block;
+      content:" ";
+      background-color: red;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      position:absolute;
+      top:0.5rem;
+      right:0.5rem;
+      z-index:100;
+      animation: pulse-red 2s infinite;
+    }
+
+    @keyframes pulse-red {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7);
+      }
+      
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(255, 82, 82, 0);
+      }
+      
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 82, 82, 0);
+      }
+    }
+
 		.page {
 			position: relative;
 			padding-bottom: 75%; /* 4:3 Aspect Ratio */
@@ -24,6 +56,10 @@
 			overflow: hidden;
       margin-bottom:1rem;
 		}
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
     .square-text{
       position:absolute;
       padding-left:10%;
@@ -116,7 +152,7 @@
     .button-container {
       display:none;
     }
-    #workbench .inset, #workbench .page-num, .next-camera{
+    #workbench .inset, #workbench .page-num, .next-camera,.recording::after{
       display:none;
     }
     #workbench .square {
@@ -131,21 +167,24 @@
 <body>
 	<div id="workbench" class="page">
     <div class="square-text">1. Click or tap to start camera.<br/>2. Tap again to capture.</div>
-		<canvas onclick="setCanvas(event)" id="canvas" class="copyable square" width="800" height="600"></canvas>
-    <canvas onclick="setCanvas(event)" class="copyable inset" width="400" height="300"></canvas>
+		<div class="copyable square" ><canvas onclick="setCanvas(event)" id="canvas" width="800" height="600"></canvas></div>
+    <div class="copyable inset" ><canvas onclick="setCanvas(event)" width="400" height="300"></canvas></div>
     <div class="copyable page-num">0</div>
     <button class="next-camera" style="display:none" onclick="getNextWebCam()" ><i class="fa fa-refresh" aria-hidden="true"></i></button>
   </div>
   <div class="button-container">
     <button onclick="options(true)" class="capture-button"><i class="fa-solid fa-gear"></i></button>
-    <button onclick="saveStep(event)" class="capture-button">Save Step</button>
+    <button onclick="saveStep(event)" class="capture-button">New Step</button>
     <button onclick="finishInstructions(event)" class="capture-button"><i class="fa-solid fa-print"></i></button>
   </div>
   <div id="steps"></div>
   <script>
 
   // todo:
+  // make outward facing camera the default
+  // make a flashing recording symbol when a page is going
   // add swipe for camera change
+  // delete a page
 
   let video = null;  
   let canvas = document.querySelector('canvas');
@@ -191,12 +230,22 @@
   }
 
   function setCanvas(e){
+
+    // set all containers to not recording
+    document.querySelectorAll(".recording").forEach((e)=>{e.classList.remove("recording")});
+
     if (canvas && canvas.id == e.target.id){
       canvas = null;
       ctx = null;
     } else {
+      // set the canvas elements
       canvas = e.target;
       ctx = canvas.getContext('2d');
+
+      // set the containers to 'recording'
+      e.target.parentElement.classList.add("recording");
+
+      // set zoom properties
       if (e.target.classList.contains("inset")){
         zoom = 2.6;
       } else {
@@ -262,10 +311,10 @@
     
     var html = `
     <div class="square-text">1. Click or tap to start camera.<br/>2. Tap again to capture.</div>
-		<canvas onclick="setCanvas(event)" id="canvas" class="copyable square" width="800" height="600"></canvas>
-    <canvas onclick="setCanvas(event)" class="copyable inset" width="400" height="300"></canvas>
-    <div class="copyable page-num">1</div>
-    <button class="next-camera" style="display:none" onclick="getNextWebCam(event)" ><i class="fa fa-refresh" aria-hidden="true"></i></button>`;
+		<div class="copyable square" ><canvas onclick="setCanvas(event)" id="canvas" width="800" height="600"></canvas></div>
+    <div class="copyable inset" ><canvas onclick="setCanvas(event)" width="400" height="300"></canvas></div>
+    <div class="copyable page-num">0</div>
+    <button class="next-camera" style="display:none" onclick="getNextWebCam()" ><i class="fa fa-refresh" aria-hidden="true"></i></button>`;
     
     workbench.innerHTML = html;
 
