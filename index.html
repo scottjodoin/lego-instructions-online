@@ -106,10 +106,12 @@
     @media print {
     body {
       margin-top:0;
-      max-width: 1024px;
+      max-width: 100%;
     }
     .page {
+      break-after:always;
       page-break-inside: avoid;
+      page-break-after: always;
     }
     .button-container {
       display:none;
@@ -131,8 +133,8 @@
     <div class="square-text">1. Click or tap to start camera.<br/>2. Tap again to capture.</div>
 		<canvas onclick="setCanvas(event)" id="canvas" class="copyable square" width="800" height="600"></canvas>
     <canvas onclick="setCanvas(event)" class="copyable inset" width="400" height="300"></canvas>
-    <div class="copyable page-num">1</div>
-    <button class="next-camera" onclick="getNextWebCam(event)" >Start Camera</button>
+    <div class="copyable page-num">0</div>
+    <button class="next-camera" style="display:none" onclick="getNextWebCam()" ><i class="fa fa-refresh" aria-hidden="true"></i></button>
   </div>
   <div class="button-container">
     <button onclick="options(true)" class="capture-button"><i class="fa-solid fa-gear"></i></button>
@@ -143,10 +145,7 @@
   <script>
 
   // todo:
-  // make the camera letterbox the input to 4:3
-  // make the text more responive for mobile?
   // add swipe for camera change
-  // zoom in for the inset box
 
   let video = null;  
   let canvas = document.querySelector('canvas');
@@ -182,7 +181,7 @@
           return device.kind === 'videoinput';
         });
         selectedId = 0;
-        e.target.innerHTML = `<i class="fa fa-refresh" aria-hidden="true"></i>`;
+        document.querySelector(".next-camera").style.display = "";
         setNextWebCam();
       });
     } else {
@@ -192,7 +191,6 @@
   }
 
   function setCanvas(e){
-
     if (canvas && canvas.id == e.target.id){
       canvas = null;
       ctx = null;
@@ -204,6 +202,10 @@
       } else {
         zoom = 1;
       }
+    }
+    
+    if (videoDevices.length == 0){
+      getNextWebCam();
     }
   }
 
@@ -263,7 +265,7 @@
 		<canvas onclick="setCanvas(event)" id="canvas" class="copyable square" width="800" height="600"></canvas>
     <canvas onclick="setCanvas(event)" class="copyable inset" width="400" height="300"></canvas>
     <div class="copyable page-num">1</div>
-    <button class="next-camera" onclick="getNextWebCam(event)" >Start Camera</button>`;
+    <button class="next-camera" style="display:none" onclick="getNextWebCam(event)" ><i class="fa fa-refresh" aria-hidden="true"></i></button>`;
     
     workbench.innerHTML = html;
 
@@ -271,7 +273,7 @@
   }
 
   function setNumbers(){
-    let i = 1;
+    let i = 0;
     Array.from(document.querySelectorAll(".page-num")).forEach((e)=>{
         e.innerText = i;
         i++;
