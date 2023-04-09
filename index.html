@@ -199,18 +199,23 @@
     } else {
       canvas = e.target;
       ctx = canvas.getContext('2d');
+      if (e.target.classList.contains("inset")){
+        zoom = 2;
+      } else {
+        zoom = 1;
+      }
     }
   }
 
 
   function drawVideo() {
     if (ctx && !locked) {
-      drawLetterBoxed();
+      drawLetterBoxed(zoom);
     }
     requestAnimationFrame(drawVideo);
   }
 
-  function drawLetterBoxed(){
+  function drawLetterBoxed(zoom){
     // Calculate the dimensions of the image
     const videoWidth = video.videoWidth;
     const videoHeight = video.videoHeight;
@@ -226,6 +231,8 @@
     } else {
       scaleFactor = canvas.height / videoHeight;
     }
+
+    scaleFactor *= zoom;
 
     // Calculate the dimensions of the scaled image
     const scaledWidth = videoWidth * scaleFactor;
@@ -265,8 +272,7 @@
 
   function setNumbers(){
     let i = 1;
-    Array.from(document.querySelectorAll(".page-num"))
-      .reverse().forEach((e)=>{
+    Array.from(document.querySelectorAll(".page-num")).forEach((e)=>{
         e.innerText = i;
         i++;
       });
