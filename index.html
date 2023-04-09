@@ -3,6 +3,7 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Lego Instructions</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 	<style>
     * {
       box-sizing:border-box;
@@ -51,7 +52,7 @@
       left: 0;
 			width: 30%; /* 4:3 Aspect Ratio */
 			height: 30%;
-			background-color: transparent;
+			background-color: white;
       border: 4px solid black;
 		}
     .page-num {
@@ -128,8 +129,8 @@
 <body>
 	<div id="workbench" class="page">
     <div class="square-text">1. Click or tap to start camera.<br/>2. Tap again to capture.</div>
-		<canvas onclick="setCanvas(event)" id="canvas" class="copyable square"></canvas>
-    <canvas onclick="setCanvas(event)" class="copyable inset"></canvas>
+		<canvas onclick="setCanvas(event)" id="canvas" class="copyable square" width="800" height="600"></canvas>
+    <canvas onclick="setCanvas(event)" class="copyable inset" width="400" height="300"></canvas>
     <div class="copyable page-num">1</div>
     <button class="next-camera" onclick="getNextWebCam(event)" >Start Camera</button>
   </div>
@@ -211,8 +212,8 @@
 
   function drawLetterBoxed(){
     // Calculate the dimensions of the image
-    const videoWidth = video.width;
-    const videoHeight = video.height;
+    const videoWidth = video.videoWidth;
+    const videoHeight = video.videoHeight;
 
     // Calculate the aspect ratios of the canvas and the image
     const canvasAspectRatio = canvas.width / canvas.height;
@@ -220,7 +221,7 @@
 
     // Calculate the scale factor to fit the image onto the canvas
     let scaleFactor;
-    if (videoAspectRatio > canvasAspectRatio) {
+    if (videoAspectRatio < canvasAspectRatio) {
       scaleFactor = canvas.width / videoWidth;
     } else {
       scaleFactor = canvas.height / videoHeight;
