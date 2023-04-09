@@ -64,6 +64,17 @@
       font-family: Verdana;
       color:black;
     }
+    .next-camera {
+      position:absolute;
+      font-size:2rem;
+      right:0;
+      bottom:0;
+      opacity:0.5;
+      color:black;
+      background:transparent;
+      cursor:pointer;
+      border:none;
+    }
     .button-container  {
       display: flex;
       justify-content:space-evenly;
@@ -120,6 +131,7 @@
 		<canvas onclick="setCanvas(event)" id="canvas" class="copyable square"></canvas>
     <canvas onclick="setCanvas(event)" class="copyable inset"></canvas>
     <div class="copyable page-num">1</div>
+    <button class="next-camera" onclick="getNextWebCam(event)" >Start Camera</button>
   </div>
   <div class="button-container">
     <button onclick="options(true)" class="capture-button">Options</button>
@@ -133,11 +145,13 @@
   let ctx = canvas.getContext('2d');
   let zoom = 1;
   let locked = false;
+  let videoDevices = [];
+  let selectedId = 0;
 
-  
-  function getWebCam(){
+  function setNextWebCam(){
     if (navigator.mediaDevices.getUserMedia) {
-      navigator.mediaDevices.getUserMedia({ video: true })
+      const selectedDevice = videoDevices[selectedId];
+      navigator.mediaDevices.getUserMedia({ video: { deviceId:selectedDevice.deviceId } })
       .then(function (stream) {
         video = document.createElement('video');
         video.srcObject = stream;
@@ -152,10 +166,24 @@
     }
   }
 
-  function setCanvas(e){
-    if (!video){
-      getWebCam();
+  function getNextWebCam(e){
+    if (videoDevices.length == 0){
+      navigator.mediaDevices.enumerateDevices()
+      .then(function(devices) {
+        videoDevices = devices.filter(function(device) {
+          return device.kind === 'videoinput';
+        });
+        selectedId = 0;
+        e.target.innerText = "Next Camera";
+        setNextWebCam();
+      });
+    } else {
+      selectedId = (selectedId + videoDevices.length + 1 ) % videoDevices.length;
+      setNextWebCam();
     }
+  }
+
+  function setCanvas(e){
 
     if (canvas && canvas.id == e.target.id){
       canvas = null;
