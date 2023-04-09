@@ -68,10 +68,9 @@
     .next-camera {
       position:absolute;
       font-size:2rem;
-      right:0;
-      bottom:0;
-      opacity:0.5;
-      color:black;
+      right:0.5rem;
+      bottom:0.5rem;
+      color:grey;
       background:transparent;
       cursor:pointer;
       border:none;
@@ -114,7 +113,7 @@
     .button-container {
       display:none;
     }
-    #workbench .inset, #workbench .page-num{
+    #workbench .inset, #workbench .page-num, .next-camera{
       display:none;
     }
     #workbench .square {
@@ -182,7 +181,7 @@
           return device.kind === 'videoinput';
         });
         selectedId = 0;
-        e.target.innerText = "Next Camera";
+        e.target.innerHTML = `<i class="fa fa-refresh" aria-hidden="true"></i>`;
         setNextWebCam();
       });
     } else {
