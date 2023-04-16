@@ -4,6 +4,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Lego Instructions</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 	<style>
     * {
       box-sizing:border-box;
@@ -139,30 +141,29 @@
       background-color:white;
     }
 
-    .first-page {
-      display: none;
-    }
-
     .first-page .square {
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
     }
+    
+    .page:not(.no-break) {
+        /* break-after:always; */
+        page-break-inside: avoid;
+        /* page-break-after: always; */
+      }
 
     @media print {
       .first-page {
         display: block;
       }
+
       body {
         margin-top:0;
         max-width: 100%;
       }
-      .page {
-        break-after:always;
-        page-break-inside: avoid;
-        page-break-after: always;
-      }
+
       .button-container {
         display:none;
       }
@@ -173,10 +174,10 @@
 	</style>
 </head>
 <body>
-  <div class="page first-page">
+  <div id="first-page" style="display:none" class="page first-page">
     <div class="first-square square"></div>
   </div>
-	<div id="workbench" class="page">
+	<div id="workbench" class="page no-break">
     <div class="square-text">1. Click or tap to start camera.<br/>2. Tap again to capture.</div>
 		<div class="copyable square" ><canvas onclick="setCanvas(event)" id="canvas" width="800" height="600"></canvas></div>
     <div class="copyable inset" ><canvas onclick="setCanvas(event)" class="inset" width="400" height="300"></canvas></div>
@@ -364,7 +365,22 @@
 
   function finishInstructions(){
     document.title = "Lego Instructions";
-    window.print();
+    //window.print();
+    var firstPage = document.querySelector(".first-page");
+    var workbench = document.getElementById("workbench");
+    var buttons = document.querySelector(".button-container");
+    firstPage.style.display = "";
+    workbench.style.display = "none";
+    buttons.style.display = "none";
+
+    var element = document.body;
+    html2pdf(element);
+
+    setTimeout(()=>{
+      firstPage.style.display = "none";
+      workbench.style.display = "";
+      buttons.style.display = "";
+    },1000);
   }
 </script>
 </body>
