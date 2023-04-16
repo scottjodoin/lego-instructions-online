@@ -32,6 +32,7 @@
       right:0.5rem;
       z-index:100;
       animation: pulse-red 2s infinite;
+      pointer-events: none;
     }
 
     @keyframes pulse-red {
@@ -243,12 +244,13 @@
 
   function setCanvas(e){
 
+    if (e.target.parentElement.parentElement.id != "workbench") return;
+
     // set all containers to not recording
     document.querySelectorAll(".recording").forEach((e)=>{e.classList.remove("recording")});
 
     if (canvas && canvas.id == e.target.id){
-      canvas = null;
-      ctx = null;
+      stopRecordingCanvas();
     } else {
       // set the canvas elements
       canvas = e.target;
@@ -270,6 +272,10 @@
     }
   }
 
+  function stopRecordingCanvas(){
+    canvas = null;
+    ctx = null;
+  }
 
   function drawVideo() {
     if (ctx && !locked) {
@@ -310,6 +316,7 @@
   };
 
   function saveStep() {
+    stopRecordingCanvas();
     let stepElement = document.createElement("DIV")
     stepElement.className = "page";
     document.getElementById("steps").prepend(stepElement);
@@ -317,6 +324,7 @@
     let workbench = document.getElementById("workbench");
     document.querySelectorAll("#workbench *").forEach((e,i) =>{
       if (!e.classList.contains("copyable")) return;
+      e.onclick = null;
       workbench.removeChild(e);
       stepElement.append(e);
     });
